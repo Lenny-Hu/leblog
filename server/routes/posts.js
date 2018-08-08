@@ -37,7 +37,7 @@ router.post('/create', checkLogin, function (req, res, next) {
   }
 
   // 添加作者
-  req.body.creator = req.session.user._id;
+  req.body.creator = req.user._id;
 
   Article.add(req.body, function (err, doc) {
     if (err) {
@@ -95,7 +95,7 @@ router.get('/:articleId/edit', checkLogin, function (req, res, next) {
       return next(err);
     }
     // 检查用户
-    if (req.session.user._id.toString() !== doc.creator._id.toString()) {
+    if (req.user._id.toString() !== doc.creator._id.toString()) {
       return next('权限不足');
     }
 
@@ -123,7 +123,7 @@ router.post('/:articleId/edit', checkLogin, function (req, res, next) {
     return res.redirect('back');
   }
 
-  Article.update(req.session.user, req.params.articleId, req.body, function (err, result) {
+  Article.update(req.user, req.params.articleId, req.body, function (err, result) {
     if (err) {
       req.flash('error', `更新文章失败：${err}`);
       return res.redirect('back');
@@ -141,7 +141,7 @@ router.get('/:articleId/remove', checkLogin, function (req, res, next) {
     return next('非法的参数');
   }
 
-  Article.remove(req.session.user, req.params.articleId, function (err, result) {
+  Article.remove(req.user, req.params.articleId, function (err, result) {
     if (err) {
       return next(err);
     }

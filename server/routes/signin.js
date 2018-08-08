@@ -3,6 +3,7 @@ const router = express.Router();
 const sha1 = require('sha1');
 const Joi = require('joi');
 const _ = require('lodash');
+const passport = require('passport');
 
 const auth = require('../middlewares/auth');
 const User = require('../db/user');
@@ -34,28 +35,50 @@ router.post('/', auth.checkNotLogin, function (req, res, next) {
   req.body.name = _.trim(req.body.name);
   req.body.password = _.trim(req.body.password);
 
+  // 照顾下插件
+  req.body.username = req.body.name;
+
+  next();
+
+  // 使用passport进行认证
+  // passport.authenticate('local', function(err, user, info) {
+  //   if (err) { return next(err); }
+  //   if (!user) { return res.redirect('/login'); }
+  //   req.logIn(user, function(err) {
+  //     if (err) { return next(err); }
+  //     return res.redirect('/users/' + user.username);
+  //   });
+  // })(req, res, next);
+
   // 查找用户信息
-  User.getUserByName(req.body.name, function (err, doc) {
-    console.log('找到的用户信息', err, doc);
-    if (err || !doc) {
-      req.flash('error', err || '没有找到用户');
-      return res.redirect('back');
-    }
-
-    // 检查用户名和密码
-    if (sha1(req.body.password) !== doc.password) {
-      req.flash('error', '用户名或密码错误');
-      return res.redirect('back');
-    }
-
-    // 登录成功，写入session，跳转到主页
-    req.flash('success', '登录成功');
-    delete doc.password;
-
-    req.session.user = doc;
-    res.redirect('/posts');
-
-  })
+  // User.getUserByName(req.body.name, function (err, doc) {
+  //   console.log('找到的用户信息', err, doc);
+  //   if (err || !doc) {
+  //     req.flash('error', err || '没有找到用户');
+  //     return res.redirect('back');
+  //   }
+  //
+  //   // 检查用户名和密码
+  //   if (sha1(req.body.password) !== doc.password) {
+  //     req.flash('error', '用户名或密码错误');
+  //     return res.redirect('back');
+  //   }
+  //
+  //   // 登录成功，写入session，跳转到主页
+  //   req.flash('success', '登录成功');
+  //   delete doc.password;
+  //
+  //   req.user = doc;
+  //   res.redirect('/posts');
+  //
+  // })
+}, passport.authenticate('local'), function (req, res, next) {
+  console.log('req.user', req.user);
+  res.redirect('/posts');
+  // req.logIn(req.user, function(err) {
+  //   if (err) { return next(err); }
+  //   res.redirect('/posts');
+  // });
 });
 
 module.exports = router;

@@ -22,5 +22,15 @@ module.exports = {
     userModel.remove(query, function (err, result) {
       return cb(err, result);
     })
+  },
+  findById: function (id, cb) {
+    userModel.findById(id, function (err, result) {
+      return cb(err, result);
+    })
+  },
+  findByName: function (name, cb) {
+    userModel.findOne({name: name}, function (err, result) {
+      return cb(err, result);
+    })
   }
 };

@@ -23,7 +23,7 @@ router.post('/', auth.checkLogin, function (req, res, next) {
   }
 
   // 添加作者
-  req.body.creator = req.session.user._id;
+  req.body.creator = req.user._id;
   req.body.article = req.body.articleId;
   delete req.body.articleId;
 
@@ -53,7 +53,7 @@ router.get('/:commentId/remove', auth.checkLogin, function (req, res, next) {
     return next('非法的参数');
   }
 
-  Comment.findOneAndRemove(req.session.user, req.params.commentId, function (err, doc) {
+  Comment.findOneAndRemove(req.user, req.params.commentId, function (err, doc) {
     if (err) {
       return next(err);
     }

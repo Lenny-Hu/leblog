@@ -8,6 +8,7 @@ const logger = require('morgan');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const flash = require('connect-flash');
+const passport = require('passport');
 
 const pkg = require('./package');
 
@@ -18,6 +19,7 @@ require('winston-daily-rotate-file');
 
 const routes = require('./routes');
 const db = require('./db');
+const auth = require('./middlewares/auth');
 
 const app = express();
 
@@ -48,6 +50,13 @@ app.use(session({
   })
 }));
 
+// 登录认证中间件
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(auth.localStrategy);
+passport.serializeUser(auth.serializeUser);
+passport.deserializeUser(auth.deserializeUser);
+
 // flash 中间件，用来显示通知
 app.use(flash());
 
@@ -59,7 +68,7 @@ app.locals.blog = {
 
 // 添加模板必需的三个变量
 app.use(function (req, res, next) {
-  res.locals.user = req.session.user;
+  res.locals.user = req.user;
   res.locals.success = req.flash('success').toString();
   res.locals.error = req.flash('error').toString();
   next();

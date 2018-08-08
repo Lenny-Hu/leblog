@@ -78,7 +78,7 @@ router.post('/', auth.checkNotLogin, function (req, res, next) {
       // 注册成功，保存用户信息并跳转到首页
       // 删除密码这种敏感信息，将用户信息存入 session
       delete doc.password;
-      req.session.user = doc;
+      req.user = doc;
       req.flash('success', '注册成功');
       res.redirect('/posts');
     })

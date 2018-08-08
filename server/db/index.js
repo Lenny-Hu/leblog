@@ -11,7 +11,7 @@ module.exports.connect = function (dbConfig) {
   }
 
   let uri = `mongodb://${user}${dbConfig.host}:${dbConfig.port || 27017}/${dbConfig.name}`;
-  mongoose.connect(uri, {auto_reconnect: true});
+  mongoose.connect(uri, {auto_reconnect: true, useNewUrlParser: true});
 
   let db = mongoose.connection;
   db.on('error', function (error) {
