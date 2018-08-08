@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
+const moment = require('moment');
 
 const checkLogin = require('../middlewares/auth').checkLogin;
 const Article = require('../db/article');
@@ -14,7 +15,7 @@ router.get('/', function (req, res, next) {
     if (err) {
       return next(err);
     }
-    return res.render('posts', {articles: results});
+    return res.render('posts', {articles: results, moment: moment});
   })
 });
 
@@ -71,7 +72,7 @@ router.get('/:articleId', function (req, res, next) {
       }
     });
 
-    return res.render('post', {article: doc});
+    return res.render('post', {article: doc, moment: moment});
   })
 });
 
