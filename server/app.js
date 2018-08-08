@@ -10,6 +10,12 @@ const MongoStore = require('connect-mongo')(session);
 const flash = require('connect-flash');
 
 const pkg = require('./package');
+
+// 日志模块
+const winston = require('winston');
+const expressWinston = require('express-winston');
+require('winston-daily-rotate-file');
+
 const routes = require('./routes');
 const db = require('./db');
 
@@ -59,12 +65,57 @@ app.use(function (req, res, next) {
   next();
 });
 
+// 正常请求的日志
+app.use(expressWinston.logger({
+  transports: [
+    new (winston.transports.Console)({
+      json: true,
+      colorize: true
+    }),
+    // new winston.transports.File({
+    //   filename: path.resolve(__dirname, 'logs/success.log'),
+    //   maxsize: 5242880, // 5MB
+    //   maxFiles: 100
+    // })
+    new (winston.transports.DailyRotateFile)({
+      filename: path.resolve(__dirname, 'logs/success-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD-HH',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '14d'
+    })
+  ]
+}));
+
 // 路由
 routes(app);
 
+// 错误请求的日志
+app.use(expressWinston.errorLogger({
+  transports: [
+    new winston.transports.Console({
+      json: true,
+      colorize: true
+    }),
+    // new winston.transports.File({
+    //   filename: path.resolve(__dirname, 'logs/error.log'),
+    //   maxsize: 5242880, // 5MB
+    //   maxFiles: 100
+    // })
+    new (winston.transports.DailyRotateFile)({
+      filename: path.resolve(__dirname, 'logs/error-%DATE%.log'),
+      datePattern: 'YYYY-MM-DD-HH',
+      zippedArchive: true,
+      maxSize: '20m',
+      maxFiles: '14d'
+    })
+  ]
+}));
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  // next(createError(404, '找不到这个资源'));
+  res.render('404');
 });
 
 // error handler
