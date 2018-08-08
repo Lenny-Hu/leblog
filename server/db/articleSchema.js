@@ -16,7 +16,13 @@ const articleSchema = new mongoose.Schema({
   },
   pv: {
     type: Number,
-    default: 0
+    default: 0,
+    min: 0
+  },
+  commentsCount: {
+    type: Number,
+    default: 0,
+    min: 0
   }
 }, {
   timestamps: { createdAt: 'createAt', updatedAt: 'updateAt' } // 自动管理创建和修改时间

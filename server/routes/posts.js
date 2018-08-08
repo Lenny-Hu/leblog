@@ -5,6 +5,7 @@ const moment = require('moment');
 
 const checkLogin = require('../middlewares/auth').checkLogin;
 const Article = require('../db/article');
+const Comment = require('../db/comments');
 
 const utils = require('../lib/utils');
 
@@ -72,7 +73,14 @@ router.get('/:articleId', function (req, res, next) {
       }
     });
 
-    return res.render('post', {article: doc, moment: moment});
+    // 获取该文章的评论列表
+    Comment.find({article: doc._id}, function (err, comments) {
+      if (err) {
+        return next(err);
+      }
+
+      return res.render('post', {article: doc, comments: comments, moment: moment});
+    });
   })
 });
 
@@ -138,6 +146,15 @@ router.get('/:articleId/remove', checkLogin, function (req, res, next) {
       return next(err);
     }
     console.log('删除结果', result);
+    // 删除留言
+    if (result.ok && result.n > 0) {
+      Comment.removeByArticleId(req.params.articleId, function (err) {
+        if (err) {
+          console.log(`删除文章《${req.params.articleId}》的评论失败：${err}`);
+        }
+      })
+    }
+
     // 删除成功后，跳转到文章列表页面
     req.flash('success', '删除文章成功');
     res.redirect('/posts');

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 require('./userSchema');
 require('./articleSchema');
+require('./commentSchema');
 
 module.exports.connect = function (dbConfig) {
   let user = '';

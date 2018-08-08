@@ -63,6 +63,15 @@ module.exports = {
       return cb(null, result);
     })
   },
+  // 更新评论数
+  incCommentCount: function (id, number, cb) {
+    articleModel.update({_id: id}, {$inc: {commentsCount: number}}, function (err, result) {
+      if (err) {
+        return cb(err);
+      }
+      return cb(null, result);
+    })
+  },
   update: function (user, id, params, cb) {
     let update = _.pick(params, 'title', 'content');
     articleModel.update({_id: id, creator: user._id}, {$set: update}, function (err, result) {
