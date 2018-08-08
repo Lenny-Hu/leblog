@@ -7,7 +7,8 @@
     "start": "node ./bin/www",
     "dev": "supervisor ./bin/www",
     "test": "mocha test",
-    "prodoction": "NODE_ENV=prodoction node ./bin/www"
+    "prodoction": "NODE_ENV=prodoction node ./bin/www",
+    "istanbul": "istanbul cover _mocha"
   },
   "dependencies": {
     "config": "^2.0.1",
@@ -35,6 +36,7 @@
     "winston-daily-rotate-file": "^3.3.0"
   },
   "devDependencies": {
+    "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "supertest": "^3.1.0"
   }
