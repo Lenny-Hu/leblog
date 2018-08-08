@@ -25,7 +25,6 @@ router.post('/', auth.checkNotLogin, function (req, res, next) {
 
   let validateResult = Joi.validate(req.body, schema);
   if (validateResult.error) {
-    console.log(validateResult.error);
     // 错误消息
     let errmsg = '表单参数错误：' + utils.getValidateErrmsg(validateResult.error.details);
     req.flash('error', errmsg);
@@ -35,50 +34,11 @@ router.post('/', auth.checkNotLogin, function (req, res, next) {
   req.body.name = _.trim(req.body.name);
   req.body.password = _.trim(req.body.password);
 
-  // 照顾下插件
+  // 照顾下passport插件，它用的username
   req.body.username = req.body.name;
 
   next();
 
-  // 使用passport进行认证
-  // passport.authenticate('local', function(err, user, info) {
-  //   if (err) { return next(err); }
-  //   if (!user) { return res.redirect('/login'); }
-  //   req.logIn(user, function(err) {
-  //     if (err) { return next(err); }
-  //     return res.redirect('/users/' + user.username);
-  //   });
-  // })(req, res, next);
-
-  // 查找用户信息
-  // User.getUserByName(req.body.name, function (err, doc) {
-  //   console.log('找到的用户信息', err, doc);
-  //   if (err || !doc) {
-  //     req.flash('error', err || '没有找到用户');
-  //     return res.redirect('back');
-  //   }
-  //
-  //   // 检查用户名和密码
-  //   if (sha1(req.body.password) !== doc.password) {
-  //     req.flash('error', '用户名或密码错误');
-  //     return res.redirect('back');
-  //   }
-  //
-  //   // 登录成功，写入session，跳转到主页
-  //   req.flash('success', '登录成功');
-  //   delete doc.password;
-  //
-  //   req.user = doc;
-  //   res.redirect('/posts');
-  //
-  // })
-}, passport.authenticate('local'), function (req, res, next) {
-  console.log('req.user', req.user);
-  res.redirect('/posts');
-  // req.logIn(req.user, function(err) {
-  //   if (err) { return next(err); }
-  //   res.redirect('/posts');
-  // });
-});
+}, passport.authenticate('local', {successRedirect: '/posts', failureRedirect: '/signin', failureFlash: true}));
 
 module.exports = router;

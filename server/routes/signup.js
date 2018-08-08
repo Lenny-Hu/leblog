@@ -48,7 +48,6 @@ router.post('/', auth.checkNotLogin, function (req, res, next) {
 
     let validateResult = Joi.validate(req.body, schema);
     if (validateResult.error) {
-      console.log(validateResult.error);
       // 注册失败，异步删除上传的头像
       utils.rmFileOrDir(req.file.path);
       // 错误消息
@@ -66,7 +65,6 @@ router.post('/', auth.checkNotLogin, function (req, res, next) {
 
     // 用户信息写入数据库
     User.add(req.body, function (err, doc) {
-      console.log(4444, err, doc);
       if (err) {
         utils.rmFileOrDir(req.file.path);
         // 跳转回注册页面
@@ -76,11 +74,12 @@ router.post('/', auth.checkNotLogin, function (req, res, next) {
       }
 
       // 注册成功，保存用户信息并跳转到首页
-      // 删除密码这种敏感信息，将用户信息存入 session
-      delete doc.password;
-      req.user = doc;
-      req.flash('success', '注册成功');
-      res.redirect('/posts');
+      req.logIn(doc, function(err) {
+        if (err) { return next(err); }
+
+        req.flash('success', '注册成功');
+        res.redirect('/posts');
+      });
     })
 
   });
