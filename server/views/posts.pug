@@ -1,4 +1,5 @@
 extends layout
 
 block content
-  h2 这里是主页
+  each article in articles
+    include posts-content

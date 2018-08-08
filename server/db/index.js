@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 require('./userSchema');
+require('./articleSchema');
 
 module.exports.connect = function (dbConfig) {
   let user = '';
