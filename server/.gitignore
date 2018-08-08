@@ -1,0 +1,11 @@
+*.pem
+.DS_Store
+.tmp/
+tmp/
+dist/
+node_modules
+*.css
+sftp-config.json
+*.log
+public/uploads/
+.idea/

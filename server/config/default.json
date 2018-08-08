@@ -1,0 +1,18 @@
+{
+  "customer": {
+    "port": "9000",
+    "db": {
+      "name": "leblog",
+      "host": "127.0.0.1",
+      "port": "27017",
+      "user": "",
+      "password": ""
+    },
+    "session": {
+      "name": "leblogSession",
+      "secret": "leblogSession",
+      "key": "leblogSession",
+      "maxAge": 2592000000
+    }
+  }
+}
