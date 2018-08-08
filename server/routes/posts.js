@@ -54,9 +54,25 @@ router.get('/create', checkLogin, function (req, res, next) {
   res.render('create');
 });
 
-// GET /posts/:postId 单独一篇的文章页
-router.get('/:postId', function (req, res, next) {
-  res.send('文章详情页');
+// GET /posts/:articleId 单独一篇的文章页
+router.get('/:articleId', function (req, res, next) {
+  if (!req.params.articleId) {
+    return next(new Error('非法的参数'));
+  }
+
+  Article.findById(req.params.articleId, function (err, doc) {
+    if (err) {
+      return next(err);
+    }
+    // 增加文章浏览数
+    Article.incPv(doc._id, function (err) {
+      if (err) {
+        console.log(`更新文章浏览数失败：${err}`);
+      }
+    });
+
+    return res.render('post', {article: doc});
+  })
 });
 
 // GET /posts/:postId/edit 更新文章页
