@@ -17,5 +17,10 @@ module.exports = {
     userModel.findOne({name: name}).lean().exec(function (err, doc) {
       return cb(err, doc);
     })
+  },
+  remove: function (query, cb) {
+    userModel.remove(query, function (err, result) {
+      return cb(err, result);
+    })
   }
 };

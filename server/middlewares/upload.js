@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
 
+const log = require('../log');
+
 // 检查上传的文件夹
 const uploadDir = path.join(__dirname, '../public/uploads');
 fs.stat(uploadDir, function (err, stat) {
@@ -67,7 +69,6 @@ module.exports = {
     const upload = multer(options).single('file');
 
     upload(req, res, function (err) {
-      console.log('upload', req.file, err, req.body);
       if (err) {
         return cb(err);
       }
@@ -76,6 +77,7 @@ module.exports = {
       }
 
       req.file.relativePath = `/uploads/${req.file.filename}`;
+      log.info('上传文件：' + JSON.stringify(req.file));
       return cb(null, req.file);
     });
   }

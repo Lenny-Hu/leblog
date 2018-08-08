@@ -131,9 +131,15 @@ app.use(function(err, req, res, next) {
   return res.render('error');
 });
 
-// // 监听端口，启动程序
-// app.listen(appConfig.port, function () {
-//   console.log(`${pkg.name} listening on port ${appConfig.port}`)
-// })
+
+// if (module.parent) {
+//   // 被 require，则导出 app
+//   module.exports = app
+// } else {
+//   // 监听端口，启动程序
+//   app.listen(appConfig.port, function () {
+//     console.log(`${pkg.name} listening on port ${appConfig.port}`)
+//   })
+// }
 
 module.exports = app;

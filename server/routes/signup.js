@@ -33,10 +33,6 @@ router.post('/', auth.checkNotLogin, function (req, res, next) {
       req.flash('error', err);
       return res.redirect('/signup');
     }
-    console.log('收到的参数1111111', req.body, req.fields);
-    console.log('上传的文件', err, file);
-
-
     // 头像
     req.body.avatar = req.file.relativePath;
 
