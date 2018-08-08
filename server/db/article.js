@@ -62,5 +62,23 @@ module.exports = {
       }
       return cb(null, result);
     })
+  },
+  update: function (user, id, params, cb) {
+    let update = _.pick(params, 'title', 'content');
+    articleModel.update({_id: id, creator: user._id}, {$set: update}, function (err, result) {
+      if (err) {
+        return cb(err);
+      }
+      return cb(null, result);
+    })
+  },
+  // 删除当前登录用户的文章
+  remove: function (user, id, cb) {
+    articleModel.remove({_id: id, creator: user._id}, function (err, result) {
+      if (err) {
+        return cb(err);
+      }
+      return cb(null, result);
+    })
   }
 };

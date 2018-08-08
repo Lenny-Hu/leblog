@@ -43,7 +43,7 @@ router.post('/create', checkLogin, function (req, res, next) {
       return res.redirect('back');
     }
 
-    // 发表成功，跳转到首页
+    // 发表成功，跳转到文章详情页
     req.flash('success', '发表成功');
     res.redirect(`/posts/${doc._id}`);
   })
@@ -57,7 +57,7 @@ router.get('/create', checkLogin, function (req, res, next) {
 // GET /posts/:articleId 单独一篇的文章页
 router.get('/:articleId', function (req, res, next) {
   if (!req.params.articleId) {
-    return next(new Error('非法的参数'));
+    return next('非法的参数');
   }
 
   Article.findById(req.params.articleId, function (err, doc) {
@@ -75,19 +75,72 @@ router.get('/:articleId', function (req, res, next) {
   })
 });
 
-// GET /posts/:postId/edit 更新文章页
-router.get('/:postId/edit', checkLogin, function (req, res, next) {
-  res.send('更新文章页');
+// GET /posts/:articleId/edit 更新文章页
+router.get('/:articleId/edit', checkLogin, function (req, res, next) {
+  if (!req.params.articleId) {
+    return next('非法的参数');
+  }
+
+  Article.findById(req.params.articleId, function (err, doc) {
+    if (err) {
+      return next(err);
+    }
+    // 检查用户
+    if (req.session.user._id.toString() !== doc.creator._id.toString()) {
+      return next('权限不足');
+    }
+
+    return res.render('edit', {article: doc});
+  })
 });
 
-// POST /posts/:postId/edit 更新一篇文章
-router.post('/:postId/edit', checkLogin, function (req, res, next) {
-  res.send('更新文章');
+// POST /posts/:articleId/edit 更新一篇文章
+router.post('/:articleId/edit', checkLogin, function (req, res, next) {
+  if (!req.params.articleId) {
+    return next('非法的参数');
+  }
+
+  // 校验参数
+  let schema = Joi.object().keys({
+    title: Joi.string().trim().required(),
+    content: Joi.string().trim().required(),
+  }).required();
+
+  let validateResult = Joi.validate(req.body, schema);
+  if (validateResult.error) {
+    // 错误消息
+    let errmsg = '表单参数错误：' + utils.getValidateErrmsg(validateResult.error.details);
+    req.flash('error', errmsg);
+    return res.redirect('back');
+  }
+
+  Article.update(req.session.user, req.params.articleId, req.body, function (err, result) {
+    if (err) {
+      req.flash('error', `更新文章失败：${err}`);
+      return res.redirect('back');
+    }
+    console.log('更新结果', result);
+    // 发表成功，跳转到文章详情页
+    req.flash('success', '更新文章成功');
+    res.redirect(`/posts/${req.params.articleId}`);
+  })
 });
 
-// GET /posts/:postId/remove 删除一篇文章
-router.get('/:postId/remove', checkLogin, function (req, res, next) {
-  res.send('删除文章');
+// GET /posts/:articleId/remove 删除一篇文章
+router.get('/:articleId/remove', checkLogin, function (req, res, next) {
+  if (!req.params.articleId) {
+    return next('非法的参数');
+  }
+
+  Article.remove(req.session.user, req.params.articleId, function (err, result) {
+    if (err) {
+      return next(err);
+    }
+    console.log('删除结果', result);
+    // 删除成功后，跳转到文章列表页面
+    req.flash('success', '删除文章成功');
+    res.redirect('/posts');
+  })
 });
 
 module.exports = router;
