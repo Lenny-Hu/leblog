@@ -17,5 +17,12 @@ module.exports = {
         return cb(null);
       }
     })
+  },
+  getValidateErrmsg: function (arr, cb) {
+    let errmsg = '';
+    _.forEach(arr, function (v) {
+      errmsg += '\n' + v.message;
+    });
+    return errmsg;
   }
 };

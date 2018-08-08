@@ -12,5 +12,10 @@ module.exports = {
       }
       return cb(null, doc);
     })
+  },
+  getUserByName: function (name, cb) {
+    userModel.findOne({name: name}).lean().exec(function (err, doc) {
+      return cb(err, doc);
+    })
   }
-}
+};
