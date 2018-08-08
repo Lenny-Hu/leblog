@@ -4,9 +4,8 @@
 tmp/
 dist/
 node_modules
-*.css
 sftp-config.json
 *.log
-public/uploads/
 .idea/
 logs/
+public/uploads/
