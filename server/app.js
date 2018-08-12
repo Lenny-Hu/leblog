@@ -1,3 +1,4 @@
+require('newrelic'); // 启用性能分析
 const appConfig = require('./config');
 
 const createError = require('http-errors');
